@@ -63,7 +63,6 @@ def torneio(dicionarioDaPopulacao): # Seleciona aleatoriamente 2 pais e retorna 
 
     return listaDePais
 
-
 def crossover(listaDePais, dicionarioDaPopulacao, taxaDeCrossover): # Realiza a combinação genética entre os pais selecionados, ordem em q os pontos serão visitados
 
     def pmx(p1, p2): # Partially Mapped Crossover - Leva em consideração a estrutura de permutação dos indivíduos e preserva a integridade dos genes (pontos de entrega), gerando novos indivíduos com um equilíbrio entre a herança dos pais.
@@ -73,34 +72,35 @@ def crossover(listaDePais, dicionarioDaPopulacao, taxaDeCrossover): # Realiza a 
         novaPermutacao = novaPermutacao[:corte] # Faz uma cópia do 1o pai até o corte
 
         for item in p2: # Para cada gene (ponto de entrega) do segundo pai (p2) que não está na cópia do 1o pai, adicionará o respectivo gene do 2o pai
-            if item not in novaPermutacao: 
+            if item not in novaPermutacao:
                 novaPermutacao.append(item)
         return novaPermutacao
 
     numeroDePais = len(listaDePais) # Define o numero de pais, correspondente ao comp. da lista de pais
-    listaDelistaDeFilhos = [] # Lista que será sobrescrita com os filhos
-    numeroDelistaDelistaDeFilhos = 0
+    listaDeFilhos = [] # Lista que será sobrescrita com os filhos
+    numeroDelistaDeFilhos = 0
 
-    while numeroDelistaDelistaDeFilhos < numeroDePais: # Repete enquanto o num de filhos gerados for menor que o num de pais
+    while numeroDelistaDeFilhos < numeroDePais: # Repete enquanto o num de filhos gerados for menor que o num de pais
         pai1 = dicionarioDaPopulacao["populacao"][listaDePais[random.randint(0, numeroDePais - 1)]] # Seleciona aleatoriamente um pai na lista de pais
         pai2 = dicionarioDaPopulacao["populacao"][listaDePais[random.randint(0, numeroDePais - 1)]] # Seleciona aleatoriamente um outro pai na lista de pais
 
         if random.random() <= taxaDeCrossover: # Se uma var. gerada aleatoriamente for menor que a taxa de cross
-            filho = pmx(pai1, pai2) 
-            filho2 = pmx(pai2, pai1) 
+            filho = pmx(pai1, pai2)
+            filho2 = pmx(pai2, pai1)
             # Chama a função pmx com os dois pais selecionados, gerando filho1 e filho2
-            listaDelistaDeFilhos.append(filho)
-            listaDelistaDeFilhos.append(filho2)
-            # Adiciona os filhos gerados na lista de filhos
+            if filho not in listaDeFilhos:
+                listaDeFilhos.append(filho)
+                numeroDelistaDeFilhos += 1
+            if filho2 not in listaDeFilhos:
+                listaDeFilhos.append(filho2)
+                numeroDelistaDeFilhos += 1
 
-            numeroDelistaDelistaDeFilhos += 2 # Incrementa a lista de filhos em 2, já que são gerados 2 filhos de uma vez
 
-    if numeroDelistaDelistaDeFilhos > numeroDePais: 
-        listaDelistaDeFilhos.pop()
+    if numeroDelistaDeFilhos > numeroDePais:
+        listaDeFilhos.pop()
     # Se o num de filhos ultrapassar o num de pais, remove o ult filho com o método pop, a fim de não exceder o num de pais (precisamos manter o tam da pop constante, caso contrário a cada geração a população cresceria mais e mais até não caber em memória)
 
-    return listaDelistaDeFilhos
-
+    return listaDeFilhos
 
 def mutacao(listaDelistaDeFilhos, taxaDeMutacao):
     for filho in listaDelistaDeFilhos: # Percorre cada indivíduo
@@ -181,7 +181,7 @@ if __name__ == "__main__": # Printar quando o algoritmo iniciar
                 pontosDeEntrega.append((indiceLinha, indiceColuna, linha[indiceColuna]))  # adicionar os pontos de entrega na lista de pontos de entrega
 
 
-    melhorDistanciaEncontrada, melhorIndividuo = algoritmoGenetico(100, 0.8, 0.1, 500, True, restaurante, pontosDeEntrega) # Atribui ao retorno da função principal que executa o A.G a melhor distancia e o melhor individuo, para que posteriormente possamos printar
+    melhorDistanciaEncontrada, melhorIndividuo = algoritmoGenetico(100, 0.8, 0.1, 200, True, restaurante, pontosDeEntrega) # Atribui ao retorno da função principal que executa o A.G a melhor distancia e o melhor individuo, para que posteriormente possamos printar
 
     print('-='*15)
     print(f'A melhor distancia encontrada foi {melhorDistanciaEncontrada} com o caminho abaixo: \n{melhorIndividuo}')
